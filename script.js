@@ -1,13 +1,9 @@
-// ====== Firebase Setup ======
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {
-  getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ====== Your Firebase Config ======
+// ===== Your Firebase Config =====
 const firebaseConfig = {
   apiKey: "AIzaSyCWGtP9r-jEbUzdUzOMUcKURiAp8BHHNR4",
   authDomain: "study-dashboard-d6ee1.firebaseapp.com",
@@ -17,125 +13,92 @@ const firebaseConfig = {
   appId: "1:869698439345:web:8e474c1b27221944b6ba90"
 };
 
-// ====== Initialize Firebase ======
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// ====== Login Page ======
-const loginBtn = document.getElementById("login-btn");
+// ===== LOGIN =====
+const loginBtn = document.getElementById("loginBtn");
 if (loginBtn) {
   loginBtn.addEventListener("click", async () => {
-    const email = document.getElementById("login-email").value.trim();
-    const password = document.getElementById("login-password").value.trim();
-
-    if (!email || !password) return alert("Please fill all fields.");
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
     try {
       await signInWithEmailAndPassword(auth, email, password);
       window.location.href = "dashboard.html";
     } catch (err) {
-      alert("Invalid email or password");
-      console.error(err);
+      alert("Invalid credentials or account not found.");
     }
   });
 }
 
-// ====== Auth State ======
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    const emailDisplay = document.getElementById("user-email");
-    if (emailDisplay) emailDisplay.textContent = user.email;
-  }
-});
+// ===== ASSIGNMENTS =====
+const addAssignmentBtn = document.getElementById("addAssignmentBtn");
+if (addAssignmentBtn) {
+  const assignmentList = document.getElementById("assignmentList");
+  addAssignmentBtn.addEventListener("click", async () => {
+    const input = document.getElementById("assignmentInput");
+    if (input.value.trim() !== "") {
+      await addDoc(collection(db, "assignments"), { text: input.value });
+      input.value = "";
+      loadAssignments();
+    }
+  });
 
-// ====== Logout ======
-const logoutBtn = document.getElementById("logout-btn");
+  async function loadAssignments() {
+    assignmentList.innerHTML = "";
+    const querySnapshot = await getDocs(collection(db, "assignments"));
+    querySnapshot.forEach((docSnap) => {
+      const li = document.createElement("li");
+      li.textContent = docSnap.data().text;
+
+      // Only admin can delete
+      if (auth.currentUser?.email === "dr.lasomed@gmail.com") {
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "❌";
+        delBtn.onclick = async () => {
+          await deleteDoc(doc(db, "assignments", docSnap.id));
+          loadAssignments();
+        };
+        li.appendChild(delBtn);
+      }
+
+      assignmentList.appendChild(li);
+    });
+  }
+
+  auth.onAuthStateChanged((user) => {
+    if (user) loadAssignments();
+  });
+}
+
+// ===== MENU TOGGLE =====
+const menuBtn = document.getElementById("menuBtn");
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    document.querySelector(".menu").classList.toggle("open");
+  });
+}
+
+// ===== THEME TOGGLE =====
+const themeToggle = document.getElementById("themeToggle");
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+  });
+}
+
+// Keep theme after reload
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+}
+
+// ===== LOGOUT =====
+const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {
     await signOut(auth);
     window.location.href = "index.html";
-  });
-}
-
-// ====== Menu Logic ======
-const menuIcon = document.getElementById("menu-icon");
-const menuItems = document.getElementById("menu-items");
-
-if (menuIcon && menuItems) {
-  menuIcon.addEventListener("click", () => {
-    menuItems.classList.toggle("active");
-  });
-}
-
-// ====== Dark/Light Mode ======
-const themeBtn = document.getElementById("theme-btn");
-if (themeBtn) {
-  themeBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    const mode = document.body.classList.contains("dark") ? "dark" : "light";
-    localStorage.setItem("theme", mode);
-  });
-
-  // Load saved theme
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "dark") document.body.classList.add("dark");
-}
-
-// ====== Dashboard / Assignments ======
-const addBtn = document.getElementById("add-assignment-btn");
-const listDiv = document.getElementById("assignment-list");
-
-if (addBtn && listDiv) {
-  import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js").then(({ addDoc, collection, onSnapshot, deleteDoc, doc }) => {
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "index.html";
-      } else {
-        const userEmail = user.email;
-
-        // Load assignments
-        onSnapshot(collection(db, "assignments"), (snapshot) => {
-          listDiv.innerHTML = "";
-          snapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            const div = document.createElement("div");
-            div.className = "assignment-card";
-            div.innerHTML = `
-              <h3>${data.title}</h3>
-              <p>${data.desc}</p>
-              <small>By: ${data.user}</small>
-              ${userEmail === "dr.lasomed@gmail.com" ? `<button data-id="${docSnap.id}" class="delete-btn">🗑️ Delete</button>` : ""}
-            `;
-            listDiv.appendChild(div);
-          });
-
-          // Delete
-          if (userEmail === "dr.lasomed@gmail.com") {
-            document.querySelectorAll(".delete-btn").forEach((btn) => {
-              btn.addEventListener("click", async (e) => {
-                await deleteDoc(doc(db, "assignments", e.target.dataset.id));
-              });
-            });
-          }
-        });
-
-        // Add assignment
-        addBtn.addEventListener("click", async () => {
-          const title = document.getElementById("assignment-title").value.trim();
-          const desc = document.getElementById("assignment-desc").value.trim();
-          if (!title || !desc) return alert("Please fill both fields.");
-
-          await addDoc(collection(db, "assignments"), {
-            title,
-            desc,
-            user: userEmail,
-            time: new Date().toISOString()
-          });
-
-          document.getElementById("assignment-title").value = "";
-          document.getElementById("assignment-desc").value = "";
-        });
-      }
-    });
   });
 }
