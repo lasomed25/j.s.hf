@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assignments</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module" src="script.js" defer></script>
+</head>
+<body class="page-body">
+  <header class="page-header">
+    <h1>📘 Assignments</h1>
+    <a href="dashboard.html" class="back-btn">← Back</a>
+  </header>
+
+  <main class="page-content">
+    <div class="assignment-input">
+      <input type="text" id="assignment-title" placeholder="Assignment title..." />
+      <textarea id="assignment-desc" placeholder="Assignment details..."></textarea>
+      <button id="add-assignment-btn">Add Assignment</button>
+    </div>
+
+    <div id="assignments-list" class="assignment-list"></div>
+  </main>
+
+  <script type="module">
+    import { db, auth } from "./script.js";
+    import { 
+      collection, addDoc, getDocs, onSnapshot, deleteDoc, doc 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const listDiv = document.getElementById("assignments-list");
+    const addBtn = document.getElementById("add-assignment-btn");
+    const titleInput = document.getElementById("assignment-title");
+    const descInput = document.getElementById("assignment-desc");
+
+    let userEmail = "";
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userEmail = user.email;
+        loadAssignments();
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    async function loadAssignments() {
+      onSnapshot(collection(db, "assignments"), (snapshot) => {
+        listDiv.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const card = document.createElement("div");
+          card.className = "assignment-card";
+          card.innerHTML = `
+            <h3>${data.title}</h3>
+            <p>${data.desc}</p>
+            ${userEmail === "dr.lasomed@gmail.com" ? `<button class="delete-btn" data-id="${docSnap.id}">🗑️ Delete</button>` : ""}
+          `;
+          listDiv.appendChild(card);
+        });
+
+        if (userEmail === "dr.lasomed@gmail.com") {
+          document.querySelectorAll(".delete-btn").forEach((btn) => {
+            btn.addEventListener("click", async (e) => {
+              const id = e.target.dataset.id;
+              await deleteDoc(doc(db, "assignments", id));
+            });
+          });
+        }
+      });
+    }
+
+    addBtn.addEventListener("click", async () => {
+      const title = titleInput.value.trim();
+      const desc = descInput.value.trim();
+      if (!title || !desc) return alert("Please fill all fields.");
+      await addDoc(collection(db, "assignments"), {
+        title,
+        desc,
+        createdAt: new Date().toISOString()
+      });
+      titleInput.value = "";
+      descInput.value = "";
+    });
+  </script>
+</body>
+</html>
