@@ -3,22 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Study Dashboard - Login</title>
+  <title>Study Dashboard Login</title>
   <link rel="stylesheet" href="style.css" />
-  <script type="module" src="script.js" defer></script>
 </head>
-<body class="login-body">
+
+<body>
   <div class="login-container">
-    <h2>Welcome Back</h2>
-    <input type="text" id="login-username" placeholder="Username" />
+    <h1>📚 Study Dashboard</h1>
+    <p>Welcome! Please log in to continue.</p>
+
+    <input type="email" id="login-email" placeholder="Email" />
     <input type="password" id="login-password" placeholder="Password" />
     <button id="login-btn">Login</button>
 
-    <p class="contact-text">
-      Contact <a href="https://instagram.com/las_omed22" target="_blank">@las_omed22</a> to get account.
+    <p class="info-text">
+      Don’t have an account?  
+      <span style="color: gray;">Contact <a href="https://instagram.com/las_omed22" target="_blank">Las_omed22</a> to get one.</span>
     </p>
+
+    <footer>
+      <p>Created by <a href="https://instagram.com/las_omed22" target="_blank">Las_omed22</a></p>
+    </footer>
   </div>
 
-  <p class="footer-text">Created by: Las</p>
+  <!-- 🔥 Load Firebase logic -->
+  <script type="module" src="script.js"></script>
 </body>
 </html>
