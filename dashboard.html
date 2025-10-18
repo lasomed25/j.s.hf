@@ -3,38 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Study Dashboard</title>
+  <title>Dashboard</title>
   <link rel="stylesheet" href="style.css" />
-  <script type="module" src="script.js" defer></script>
 </head>
-<body class="dashboard-body">
-  <header class="dashboard-header">
-    <h1>Study Dashboard</h1>
-    <div class="menu-container">
-      <button id="menu-btn" class="menu-btn">⋮</button>
-      <div id="menu-list" class="menu-list hidden">
-        <a href="assignments.html">📘 Assignments</a>
-        <a href="notes.html">🧠 Notes</a>
-        <a href="progress.html">📈 Progress</a>
-        <button id="toggle-mode">🌗 Toggle Dark/Light</button>
-        <button id="logout-btn">🚪 Logout</button>
+<body>
+  <nav>
+    <h2>Study Dashboard</h2>
+    <div class="menu">
+      <button id="menuBtn">☰</button>
+      <div class="dropdown">
+        <button id="themeToggle">Toggle Theme 🌙</button>
+        <button id="logoutBtn">Logout</button>
       </div>
     </div>
-  </header>
+  </nav>
 
-  <main class="dashboard-content">
-    <h2>Welcome to your study space!</h2>
-    <p>Use the menu in the top-right corner to navigate your tools.</p>
+  <main>
+    <h3 id="welcomeMessage">Welcome!</h3>
+
+    <div class="assignment-input">
+      <input type="text" id="assignmentInput" placeholder="Add new assignment..." />
+      <button id="addAssignmentBtn">Add</button>
+    </div>
+
+    <ul id="assignmentList"></ul>
   </main>
 
-  <script>
-    // simple 3-dot menu toggle animation
-    const menuBtn = document.getElementById("menu-btn");
-    const menuList = document.getElementById("menu-list");
-    menuBtn.addEventListener("click", () => {
-      menuList.classList.toggle("hidden");
-      menuList.classList.toggle("show");
-    });
-  </script>
+  <footer>
+    <p>Made with ❤️ by <a href="https://instagram.com/las_omed11" target="_blank">@las_omed11</a></p>
+  </footer>
+
+  <script type="module" src="script.js"></script>
 </body>
 </html>
