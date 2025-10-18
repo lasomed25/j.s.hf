@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCWGtP9r-jEbUzdUzOMUcKURiAp8BHHNR4",
@@ -15,7 +15,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ===== LOGIN =====
+// LOGIN PAGE
 const loginBtn = document.getElementById("loginBtn");
 if (loginBtn) {
   loginBtn.addEventListener("click", async () => {
@@ -30,7 +30,7 @@ if (loginBtn) {
   });
 }
 
-// ===== DASHBOARD =====
+// DASHBOARD
 const addAssignmentBtn = document.getElementById("addAssignmentBtn");
 if (addAssignmentBtn) {
   const assignmentList = document.getElementById("assignmentList");
@@ -66,7 +66,7 @@ if (addAssignmentBtn) {
   });
 }
 
-// ===== MENU + THEME + LOGOUT =====
+// MENU + THEME + LOGOUT
 const menuBtn = document.getElementById("menuBtn");
 if (menuBtn) {
   menuBtn.addEventListener("click", () => {
