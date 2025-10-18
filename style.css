@@ -1,179 +1,182 @@
-/* ====== General Theme ====== */
-:root {
-  --primary: #22c55e; /* green */
-  --secondary: #3b82f6; /* blue */
-  --bg: #f9fafb;
-  --text: #111827;
-  --card-bg: #ffffff;
-  --shadow: rgba(0, 0, 0, 0.1);
-}
-
-body.dark {
-  --bg: #0f172a;
-  --text: #f8fafc;
-  --card-bg: #1e293b;
-  --shadow: rgba(255, 255, 255, 0.1);
+/* ===== Base Style ===== */
+* {
+  box-sizing: border-box;
 }
 
 body {
   font-family: "Poppins", sans-serif;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: var(--bg);
   color: var(--text);
+  transition: all 0.3s ease;
   margin: 0;
+  padding: 0;
   min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* ====== Containers ====== */
-.login-container, .page-content {
-  background: var(--card-bg);
-  border-radius: 20px;
-  box-shadow: 0 10px 25px var(--shadow);
-  padding: 2rem;
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.dashboard-container {
-  background: var(--card-bg);
-  border-radius: 25px;
-  padding: 2rem;
-  box-shadow: 0 8px 25px var(--shadow);
-  text-align: center;
-  width: 90%;
-  max-width: 900px;
-  transition: all 0.3s ease;
-}
-
-/* ====== Titles ====== */
-h1, h2, h3 {
-  margin: 0.5rem 0;
-}
-
-/* ====== Inputs & Buttons ====== */
-input, button {
-  width: 90%;
-  padding: 0.8rem;
-  border-radius: 12px;
-  border: none;
-  outline: none;
-  margin: 0.5rem 0;
-  font-size: 1rem;
-}
-
-button {
-  cursor: pointer;
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
-  color: white;
-  font-weight: 600;
-  transition: transform 0.2s ease;
-}
-
-button:hover {
-  transform: scale(1.05);
-}
-
-/* ====== Menu ====== */
-.menu {
-  position: fixed;
-  top: 20px;
-  right: 30px;
-  z-index: 100;
-}
-
-.menu-icon {
-  font-size: 1.8rem;
-  cursor: pointer;
-  color: white;
-  transition: transform 0.3s ease;
-}
-
-.menu-icon:hover {
-  transform: rotate(90deg);
-}
-
-.menu-items {
-  display: none;
   flex-direction: column;
-  background: var(--card-bg);
-  border-radius: 15px;
-  box-shadow: 0 8px 20px var(--shadow);
+}
+
+/* ===== Theme Colors ===== */
+:root {
+  --bg: #e9f5ff;
+  --text: #0f172a;
+  --primary: #0ea5e9;
+  --secondary: #22c55e;
+}
+
+body.dark {
+  --bg: #0f172a;
+  --text: #e2e8f0;
+  --primary: #38bdf8;
+  --secondary: #4ade80;
+}
+
+/* ===== Nav Bar ===== */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: linear-gradient(90deg, var(--secondary), var(--primary));
+  color: white;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+nav h2 {
+  margin: 0;
+}
+
+.menu {
+  position: relative;
+}
+
+#menuBtn {
+  background: transparent;
+  border: none;
+  font-size: 26px;
+  color: white;
+  cursor: pointer;
+  outline: none;
+  transition: 0.2s;
+}
+
+#menuBtn:hover {
+  transform: scale(1.1);
+}
+
+.dropdown {
+  display: none;
   position: absolute;
   right: 0;
   top: 40px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  min-width: 180px;
   overflow: hidden;
+  z-index: 99;
 }
 
-.menu-items.active {
-  display: flex;
-}
-
-.menu-items button {
-  background: none;
-  color: var(--text);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.menu-items button:last-child {
-  border-bottom: none;
-}
-
-/* ====== Assignments & Progress Cards ====== */
-.assignment-card, .progress-card {
-  background: var(--card-bg);
-  margin: 1rem 0;
-  border-radius: 12px;
-  box-shadow: 0 5px 10px var(--shadow);
-  padding: 1rem;
+.dropdown a,
+.dropdown button {
+  display: block;
+  padding: 12px 15px;
   text-align: left;
-}
-
-.progress-bar {
+  background: none;
+  border: none;
+  color: #000;
   width: 100%;
-  height: 10px;
-  background: #e5e7eb;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 10px;
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
-}
-
-/* ====== Footer & Links ====== */
-footer {
-  margin-top: 1rem;
-  font-size: 0.9rem;
-}
-
-a {
-  color: var(--secondary);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* ====== Toggle (Dark/Light) ====== */
-.toggle-theme {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  border: 2px solid var(--secondary);
-  color: var(--secondary);
-  background: transparent;
+  font-size: 15px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s;
 }
 
-.toggle-theme:hover {
-  background: var(--secondary);
+.dropdown a:hover,
+.dropdown button:hover {
+  background: #f1f5f9;
+}
+
+.menu.open .dropdown {
+  display: block;
+}
+
+/* ===== Main Content ===== */
+main {
+  flex: 1;
+  max-width: 700px;
+  margin: 50px auto;
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+body.dark main {
+  background: #1e293b;
+}
+
+.assignment-input {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+input {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  width: 70%;
+  outline: none;
+}
+
+button {
+  background: var(--primary);
   color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: var(--secondary);
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  background: #f1f5f9;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+body.dark ul li {
+  background: #334155;
+}
+
+footer {
+  text-align: center;
+  padding: 15px;
+  font-size: 14px;
+  background: transparent;
+}
+
+footer a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+footer a:hover {
+  color: var(--secondary);
 }
