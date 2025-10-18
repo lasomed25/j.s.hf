@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Dashboard</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    header {
+      background: #4a6cf7;
+      color: white;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+      font-weight: 500;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      flex: 1 1 300px;
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #4a6cf7;
+      font-size: 1.2rem;
+    }
+
+    .progress-bar {
+      background: #eee;
+      border-radius: 20px;
+      overflow: hidden;
+      height: 10px;
+      margin: 10px 0;
+    }
+
+    .progress {
+      height: 10px;
+      background: #4a6cf7;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    button {
+      background: #4a6cf7;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #3954c4;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 0.9rem;
+      color: #555;
+      background: #f0f0f0;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Student Dashboard</h1>
+    <nav>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#assignments">Assignments</a>
+      <a href="#progress">Progress</a>
+      <a href="#notes">Notes</a>
+    </nav>
+  </header>
+
+  <div class="container">
+
+    <div class="card" id="dashboard">
+      <h2>Welcome Back 👋</h2>
+      <p>Name: <b id="studentName">Student</b></p>
+      <p>Study Goal: <b id="goal">Learn 3 topics today</b></p>
+      <input type="text" id="newGoal" placeholder="Set a new goal..." />
+      <button onclick="setGoal()">Update Goal</button>
+    </div>
+
+    <div class="card" id="assignments">
+      <h2>Assignments 📚</h2>
+      <ul id="taskList"></ul>
+      <input type="text" id="taskInput" placeholder="Add new assignment..." />
+      <button onclick="addTask()">Add</button>
+    </div>
+
+    <div class="card" id="progress">
+      <h2>Progress Tracker 📈</h2>
+      <div class="progress-bar"><div class="progress" id="progressBar"></div></div>
+      <p><span id="progressText">0%</span> Complete</p>
+      <button onclick="increaseProgress()">Add Progress</button>
+    </div>
+
+    <div class="card" id="notes">
+      <h2>Quick Notes 📝</h2>
+      <textarea id="notesArea" rows="6" style="width:100%;padding:10px;border-radius:8px;"></textarea>
+      <button onclick="saveNotes()">Save Notes</button>
+    </div>
+
+  </div>
+
+  <footer>© 2025 Study Dashboard by You</footer>
+
+  <script>
+    // Load saved data
+    document.getElementById('notesArea').value = localStorage.getItem('notes') || '';
+    document.getElementById('goal').innerText = localStorage.getItem('goal') || 'Learn 3 topics today';
+    document.getElementById('progressBar').style.width = localStorage.getItem('progress') || '0%';
+    document.getElementById('progressText').innerText = localStorage.getItem('progress') || '0%';
+    document.getElementById('taskList').innerHTML = localStorage.getItem('tasks') || '';
+
+    function setGoal() {
+      const goal = document.getElementById('newGoal').value;
+      if (goal.trim() === '') return;
+      document.getElementById('goal').innerText = goal;
+      localStorage.setItem('goal', goal);
+      document.getElementById('newGoal').value = '';
+    }
+
+    function addTask() {
+      const input = document.getElementById('taskInput');
+      const list = document.getElementById('taskList');
+      if (input.value.trim() === '') return;
+      const li = document.createElement('li');
+      li.textContent = input.value;
+      li.style.cursor = 'pointer';
+      li.onclick = function() {
+        li.style.textDecoration = 'line-through';
+        saveTasks();
+      };
+      list.appendChild(li);
+      saveTasks();
+      input.value = '';
+    }
+
+    function saveTasks() {
+      localStorage.setItem('tasks', document.getElementById('taskList').innerHTML);
+    }
+
+    function increaseProgress() {
+      let width = parseInt(localStorage.getItem('progress')) || 0;
+      if (width < 100) width += 10;
+      document.getElementById('progressBar').style.width = width + '%';
+      document.getElementById('progressText').innerText = width + '%';
+      localStorage.setItem('progress', width + '%');
+    }
+
+    function saveNotes() {
+      const notes = document.getElementById('notesArea').value;
+      localStorage.setItem('notes', notes);
+    }
+  </script>
+</body>
+</html>
