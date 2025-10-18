@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard</title>
+  <title>Study Dashboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -12,23 +12,42 @@
     <div class="menu">
       <button id="menuBtn">☰</button>
       <div class="dropdown">
-        <button id="themeToggle">Toggle Theme 🌙</button>
-        <button id="logoutBtn">Logout</button>
+        <button class="menuItem" id="assignmentsBtn">📘 Assignments</button>
+        <button class="menuItem" id="progressBtn">📈 Progress</button>
+        <button class="menuItem" id="notesBtn">📝 Notes</button>
+        <button id="themeToggle">🌙 Toggle Theme</button>
+        <button id="logoutBtn">🚪 Logout</button>
       </div>
     </div>
   </nav>
 
   <main>
-    <h3 id="welcomeMessage">Welcome!</h3>
-    <div class="assignment-input">
-      <input type="text" id="assignmentInput" placeholder="Add new assignment..." />
-      <button id="addAssignmentBtn">Add</button>
-    </div>
-    <ul id="assignmentList"></ul>
+    <h3 id="welcomeMessage" class="welcome-text">Welcome!</h3>
+
+    <section id="assignmentsSection" class="section active">
+      <h4>Assignments</h4>
+      <div class="assignment-input">
+        <input type="text" id="assignmentInput" placeholder="Add new assignment..." />
+        <button id="addAssignmentBtn">Add</button>
+      </div>
+      <ul id="assignmentList"></ul>
+    </section>
+
+    <section id="progressSection" class="section hidden">
+      <h4>Your Progress</h4>
+      <p>Coming soon...</p>
+    </section>
+
+    <section id="notesSection" class="section hidden">
+      <h4>Your Notes</h4>
+      <p>Coming soon...</p>
+    </section>
   </main>
 
   <footer>
-    <p>Made with ❤️ by <a href="https://instagram.com/las_omed11" target="_blank">@las_omed11</a></p>
+    <p>Made with 💚💙 by 
+      <a href="https://instagram.com/las_omed11" target="_blank">@las_omed11</a>
+    </p>
   </footer>
 
   <script type="module" src="script.js"></script>
