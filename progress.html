@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progress Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module" src="script.js" defer></script>
+</head>
+<body class="page-body">
+  <header class="page-header">
+    <h1>📈 Progress Tracker</h1>
+    <a href="dashboard.html" class="back-btn">← Back</a>
+  </header>
+
+  <main class="page-content">
+    <div class="progress-input">
+      <input type="text" id="progress-name" placeholder="Task or subject name..." />
+      <input type="number" id="progress-value" placeholder="Progress %" min="0" max="100" />
+      <button id="add-progress-btn">Add / Update</button>
+    </div>
+
+    <div id="progress-list" class="progress-list"></div>
+  </main>
+
+  <script type="module">
+    import { db, auth } from "./script.js";
+    import {
+      collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, getDocs, query, where
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const nameInput = document.getElementById("progress-name");
+    const valueInput = document.getElementById("progress-value");
+    const addBtn = document.getElementById("add-progress-btn");
+    const listDiv = document.getElementById("progress-list");
+    let userEmail = "";
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userEmail = user.email;
+        loadProgress();
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    function loadProgress() {
+      onSnapshot(collection(db, "progress"), (snapshot) => {
+        listDiv.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const div = document.createElement("div");
+          div.className = "progress-card";
+          div.innerHTML = `
+            <h3>${data.name}</h3>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${data.value}%"></div>
+            </div>
+            <p>${data.value}% complete</p>
+            ${userEmail === "dr.lasomed@gmail.com" ? `<button class="delete-btn" data-id="${docSnap.id}">🗑️ Delete</button>` : ""}
+          `;
+          listDiv.appendChild(div);
+        });
+
+        if (userEmail === "dr.lasomed@gmail.com") {
+          document.querySelectorAll(".delete-btn").forEach((btn) => {
+            btn.addEventListener("click", async (e) => {
+              await deleteDoc(doc(db, "progress", e.target.dataset.id));
+            });
+          });
+        }
+      });
+    }
+
+    addBtn.addEventListener("click", async () => {
+      const name = nameInput.value.trim();
+      const value = Number(valueInput.value);
+      if (!name || isNaN(value) || value < 0 || value > 100)
+        return alert("Enter a valid task and progress % between 0–100.");
+
+      const q = query(collection(db, "progress"), where("name", "==", name));
+      const existing = await getDocs(q);
+
+      if (!existing.empty) {
+        const docRef = existing.docs[0].ref;
+        await updateDoc(docRef, { value });
+      } else {
+        await addDoc(collection(db, "progress"), { name, value });
+      }
+
+      nameInput.value = "";
+      valueInput.value = "";
+    });
+  </script>
+</body>
+</html>
