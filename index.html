@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | Study Dashboard</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Study Dashboard - Login</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="login-container">
-    <h2>Welcome Back!</h2>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
+    <h2>Welcome Back</h2>
+    <input type="email" id="email" placeholder="Email" autocomplete="username" />
+    <input type="password" id="password" placeholder="Password" autocomplete="current-password" />
     <button id="loginBtn">Login</button>
+
     <p class="contact-text">
-      Don’t have an account? <br>
-      Contact <a href="https://instagram.com/las_omed22" target="_blank">@las_omed22</a> to get one.
+      Don't have an account? Contact
+      <a href="https://instagram.com/las_omed22" target="_blank">@las_omed22</a>
+      to get one.
     </p>
-    <p id="errorMsg"></p>
+
+    <p id="errorMsg" class="error"></p>
   </div>
 
   <footer>
