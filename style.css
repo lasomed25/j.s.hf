@@ -1,126 +1,35 @@
-/* ===== Global Styles ===== */
 body {
-  font-family: "Poppins", sans-serif;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom right, #3fa9f5, #00c851);
+  height: 100vh;
   margin: 0;
-  padding: 0;
-  background-color: #eaf7f0;
-  color: #0b2239;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-header {
-  background: linear-gradient(90deg, #2bb673, #1a73e8);
-  color: white;
-  padding: 15px 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
-
-h1 {
-  margin: 0;
-  font-size: 1.6rem;
+.login-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  width: 300px;
+  text-align: center;
 }
-
-/* ===== 3-Dot Menu ===== */
-.menu-container {
-  position: relative;
-  display: inline-block;
+.login-container input {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
 }
-
-#menuButton {
-  background: transparent;
+button {
+  background: #00c851;
   color: white;
   border: none;
-  font-size: 26px;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
   cursor: pointer;
 }
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  background-color: white;
-  min-width: 180px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  border-radius: 10px;
-  z-index: 10;
-}
-
-.dropdown-content a {
-  color: #0b2239;
-  padding: 10px 15px;
-  display: block;
-  text-decoration: none;
-  border-bottom: 1px solid #eaeaea;
-}
-
-.dropdown-content a:hover {
-  background-color: #f5f5f5;
-}
-
-.show {
-  display: block;
-}
-
-/* ===== Main Section ===== */
-main {
-  padding: 25px;
-  min-height: calc(100vh - 140px);
-}
-
-.card {
-  background: white;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-/* ===== Footer ===== */
-footer {
-  text-align: center;
-  padding: 15px;
-  background-color: #f0f8f2;
-  color: #333;
-}
-
-footer a {
-  color: #2bb673;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-/* ===== Dark Mode ===== */
-.dark-mode {
-  background-color: #0b2239;
-  color: #eaf7f0;
-}
-
-.dark-mode header {
-  background: linear-gradient(90deg, #1a73e8, #2bb673);
-}
-
-.dark-mode footer {
-  background-color: #142f4c;
-  color: #cde8e1;
-}
-
-.dark-mode .card {
-  background-color: #183a63;
-  color: #eaf7f0;
-}
-
-.dark-mode .dropdown-content {
-  background-color: #183a63;
-}
-
-.dark-mode .dropdown-content a {
-  color: #eaf7f0;
-  border-color: #2bb673;
-}
-
-.dark-mode .dropdown-content a:hover {
-  background-color: #1f4a7a;
+.credit {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: #555;
 }
