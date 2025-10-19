@@ -1,160 +1,135 @@
-// === Firebase setup ===
+// Import Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  addDoc,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// Your Firebase config
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCWGtP9r-jEbUzdUzOMUcKURiAp8BHHNR4",
+  authDomain: "study-dashboard-d6ee1.firebaseapp.com",
+  projectId: "study-dashboard-d6ee1",
+  storageBucket: "study-dashboard-d6ee1.firebasestorage.app",
+  messagingSenderId: "869698439345",
+  appId: "1:869698439345:web:8e474c1b27221944b6ba90"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// === Role setup ===
-const ADMIN_EMAIL = "dr.lasomed@gmail.com";
-const TEACHER_EMAIL = "las@teach.com";
+// Admin and Teacher setup
+const adminEmail = "lasomed@gmail.com";
+const teacherEmail = "las@teach.com";
 
-let currentUserRole = "student";
-
-// === Login Handling ===
-const loginBtn = document.getElementById("loginBtn");
-if (loginBtn) {
-  loginBtn.addEventListener("click", () => {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-
-        if (email === ADMIN_EMAIL) {
-          currentUserRole = "admin";
-        } else if (email === TEACHER_EMAIL) {
-          currentUserRole = "teacher";
-        } else {
-          currentUserRole = "student";
-        }
-
-        localStorage.setItem("role", currentUserRole);
-        window.location.href = "dashboard.html";
-      })
-      .catch((error) => alert(error.message));
+// Login page
+if (document.getElementById("loginBtn")) {
+  document.getElementById("loginBtn").addEventListener("click", async () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      window.location.href = "dashboard.html";
+    } catch (err) {
+      alert("Login failed: " + err.message);
+    }
   });
 }
 
-// === Dashboard ===
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    currentUserRole = localStorage.getItem("role");
-
-    // Hide admin-only content for students
-    if (currentUserRole === "student") {
-      document.getElementById("addAssignmentSection").style.display = "none";
+// Dashboard page
+onAuthStateChanged(auth, async (user) => {
+  if (document.getElementById("logoutBtn")) {
+    if (!user) {
+      window.location.href = "index.html";
+      return;
     }
 
-    loadAssignments();
-    if (currentUserRole === "teacher" || currentUserRole === "admin") {
-      loadStudentProgress();
-    }
-  }
-});
+    const email = user.email;
+    const welcomeText = document.getElementById("welcomeText");
+    const roleText = document.getElementById("roleText");
+    const assignmentSection = document.getElementById("assignments-section");
+    const addAssignmentDiv = document.getElementById("add-assignment");
+    const gradesSection = document.getElementById("grades-section");
+    const gradesContainer = document.getElementById("grades-container");
+    const progressText = document.getElementById("progressText");
 
-// === Assignment Handling ===
-const addBtn = document.getElementById("addAssignment");
-if (addBtn) {
-  addBtn.addEventListener("click", () => {
-    const title = document.getElementById("assignmentTitle").value.trim();
-    if (!title) return alert("Enter assignment title");
+    // Determine role
+    let role = "Student";
+    if (email === adminEmail) role = "Admin";
+    else if (email === teacherEmail) role = "Teacher";
 
-    const assignmentsRef = ref(db, "assignments");
-    push(assignmentsRef, { title });
-    document.getElementById("assignmentTitle").value = "";
-  });
-}
+    welcomeText.textContent = `Welcome, ${email.split("@")[0]}!`;
+    roleText.textContent = `Role: ${role}`;
 
-function loadAssignments() {
-  const list = document.getElementById("assignmentList");
-  if (!list) return;
+    assignmentSection.classList.remove("hidden");
+    gradesSection.classList.remove("hidden");
+    progressText.textContent = "Your learning progress is at 75%! Keep going 💪";
 
-  onValue(ref(db, "assignments"), (snapshot) => {
-    list.innerHTML = "";
-    snapshot.forEach((childSnapshot) => {
-      const data = childSnapshot.val();
-      const key = childSnapshot.key;
+    // Load assignments
+    const assignmentsList = document.getElementById("assignments-list");
+    assignmentsList.innerHTML = "";
 
+    const querySnapshot = await getDocs(collection(db, "assignments"));
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
       const div = document.createElement("div");
       div.classList.add("assignment-item");
-      div.textContent = data.title;
-
-      if (currentUserRole === "teacher" || currentUserRole === "admin") {
-        const del = document.createElement("button");
-        del.textContent = "🗑️";
-        del.classList.add("delete-btn");
-        del.onclick = () => remove(ref(db, "assignments/" + key));
-        div.appendChild(del);
+      div.innerHTML = `<h4>${data.title}</h4><p>${data.desc}</p>`;
+      if (role === "Admin" || role === "Teacher") {
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "❌ Delete";
+        delBtn.addEventListener("click", async () => {
+          await setDoc(doc(db, "assignments", docSnap.id), {}, { merge: false });
+          alert("Assignment deleted!");
+          location.reload();
+        });
+        div.appendChild(delBtn);
       }
-
-      list.appendChild(div);
+      assignmentsList.appendChild(div);
     });
-  });
-}
 
-// === Student Progress (for teachers/admins) ===
-function loadStudentProgress() {
-  const progressTable = document.getElementById("progressTable");
-  if (!progressTable) return;
+    // Add assignments
+    if (role === "Admin" || role === "Teacher") {
+      addAssignmentDiv.classList.remove("hidden");
+      document
+        .getElementById("addAssignmentBtn")
+        .addEventListener("click", async () => {
+          const title = document.getElementById("assignmentTitle").value;
+          const desc = document.getElementById("assignmentDesc").value;
+          if (!title) return alert("Please enter a title.");
+          await addDoc(collection(db, "assignments"), { title, desc });
+          alert("Assignment added!");
+          location.reload();
+        });
+    }
 
-  onValue(ref(db, "progress"), (snapshot) => {
-    progressTable.innerHTML = `
-      <tr>
-        <th>Student Name</th>
-        <th>Completed</th>
-        <th>Total</th>
-        <th>Percentage</th>
-      </tr>
-    `;
-    snapshot.forEach((child) => {
-      const data = child.val();
-      const row = document.createElement("tr");
-      const percent = ((data.completed / data.total) * 100).toFixed(0);
-      row.innerHTML = `
-        <td>${data.name}</td>
-        <td>${data.completed}</td>
-        <td>${data.total}</td>
-        <td>${percent}%</td>
-      `;
-      progressTable.appendChild(row);
-    });
-  });
-}
-
-// === Dark/Light Mode ===
-const toggleThemeBtn = document.getElementById("toggleTheme");
-if (toggleThemeBtn) {
-  toggleThemeBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
-  });
-
-  if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark");
-  }
-}
-
-// === Logout ===
-const logoutBtn = document.getElementById("logout");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", () => {
-    signOut(auth).then(() => {
-      localStorage.clear();
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
       window.location.href = "index.html";
     });
-  });
-}
+
+    // Dark mode
+    const toggle = document.getElementById("darkModeToggle");
+    const menu = document.getElementById("menu");
+    const menuBtn = document.getElementById("menu-btn");
+    toggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+    });
+    menuBtn.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+    });
+  }
+});
