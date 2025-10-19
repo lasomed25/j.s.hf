@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Grades</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🎓 Student Grades</h1>
+    <button id="menu-btn">⋮</button>
+    <div id="menu" class="hidden">
+      <a href="dashboard.html">🏠 Dashboard</a>
+      <button id="darkModeToggle">🌗 Toggle Mode</button>
+      <button id="logoutBtn">🚪 Logout</button>
+    </div>
+  </header>
+
+  <main id="gradesMain">
+    <section id="user-info">
+      <h2 id="studentName">Loading...</h2>
+      <p id="roleText"></p>
+    </section>
+
+    <section id="grades-section">
+      <h2>📚 Your Grades</h2>
+      <div id="gradesList"></div>
+    </section>
+
+    <section id="add-grade-section" class="hidden">
+      <h2>Add / Edit Grade</h2>
+      <input type="email" id="gradeStudentEmail" placeholder="Student Email" />
+      <input type="text" id="subject" placeholder="Subject" />
+      <input type="number" id="gradeValue" placeholder="Grade (0–100)" />
+      <button id="saveGradeBtn">Save Grade</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>Created by <a href="https://instagram.com/las_omed22" target="_blank">@Las</a></p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      getDocs,
+      addDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Firebase config (your existing one)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCWGtP9r-jEbUzdUzOMUcKURiAp8BHHNR4",
+      authDomain: "study-dashboard-d6ee1.firebaseapp.com",
+      projectId: "study-dashboard-d6ee1",
+      storageBucket: "study-dashboard-d6ee1.firebasestorage.app",
+      messagingSenderId: "869698439345",
+      appId: "1:869698439345:web:8e474c1b27221944b6ba90"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const adminEmail = "lasomed@gmail.com";
+    const teacherEmail = "las@teach.com";
+
+    const menuBtn = document.getElementById("menu-btn");
+    const menu = document.getElementById("menu");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const darkToggle = document.getElementById("darkModeToggle");
+
+    menuBtn.addEventListener("click", () => menu.classList.toggle("hidden"));
+    darkToggle.addEventListener("click", () => document.body.classList.toggle("dark"));
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      const email = user.email;
+      document.getElementById("studentName").textContent = email;
+      let role = "Student";
+      if (email === adminEmail) role = "Admin";
+      else if (email === teacherEmail) role = "Teacher";
+      document.getElementById("roleText").textContent = `Role: ${role}`;
+
+      // Show add/edit section for Admin or Teacher
+      if (role === "Admin" || role === "Teacher") {
+        document.getElementById("add-grade-section").classList.remove("hidden");
+      }
+
+      const gradesList = document.getElementById("gradesList");
+      gradesList.innerHTML = "Loading...";
+
+      let q;
+      if (role === "Admin" || role === "Teacher") {
+        q = query(collection(db, "grades"));
+      } else {
+        q = query(collection(db, "grades"), where("student", "==", email));
+      }
+
+      const snapshot = await getDocs(q);
+      gradesList.innerHTML = "";
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.classList.add("assignment-item");
+        div.innerHTML = `<strong>${data.subject}</strong>: ${data.grade}% (${data.student})`;
+        gradesList.appendChild(div);
+      });
+
+      document.getElementById("saveGradeBtn").addEventListener("click", async () => {
+        const student = document.getElementById("gradeStudentEmail").value.trim();
+        const subject = document.getElementById("subject").value.trim();
+        const grade = Number(document.getElementById("gradeValue").value);
+        if (!student || !subject || isNaN(grade)) {
+          alert("Fill all fields correctly!");
+          return;
+        }
+        await addDoc(collection(db, "grades"), { student, subject, grade });
+        alert("Grade saved!");
+        location.reload();
+      });
+    });
+  </script>
+</body>
+</html>
