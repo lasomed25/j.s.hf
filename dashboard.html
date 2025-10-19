@@ -1,78 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Study Dashboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">Study Dashboard</div>
-    <div class="right">
-      <div id="welcome" class="welcome">Loading...</div>
-      <button id="menuBtn" class="menu-btn">⋮</button>
-      <div id="menu" class="menu-popup hidden">
-        <button data-action="dashboard">🏠 Dashboard</button>
-        <button data-action="announcements">📢 Announcements</button>
-        <button data-action="profile">👤 My Profile</button>
-        <button id="manageStudentsBtn" data-action="manage" class="hidden">🧑‍🏫 Manage Students</button>
-        <button id="toggleTheme" data-action="theme">🌗 Toggle Theme</button>
-        <button id="logoutBtn" data-action="logout">🚪 Logout</button>
+  <header>
+    <h1 id="welcomeText">Welcome 👋</h1>
+    <div class="menu-container">
+      <button id="menuButton">⋮</button>
+      <div id="menuDropdown" class="dropdown-content">
+        <a href="#" id="dashboardLink">🏠 Dashboard</a>
+        <a href="#" id="announcementsLink">📢 Announcements</a>
+        <a href="#" id="profileLink">👤 My Profile</a>
+        <a href="#" id="manageStudentsLink" class="teacher-only">🧑‍🏫 Manage Students</a>
+        <a href="#" id="toggleTheme">🌗 Toggle Dark/Light Mode</a>
+        <a href="#" id="logoutBtn">🚪 Logout</a>
       </div>
     </div>
   </header>
 
-  <main class="container">
-    <section id="dashboardView" class="view">
-      <h2>Dashboard</h2>
-      <p>Quick overview. Use the menu to navigate.</p>
-
-      <div class="panels">
-        <div class="panel">
-          <h3>Assignments</h3>
-          <div id="assignControls" class="controls hidden">
-            <input id="assignmentTitle" placeholder="Title" />
-            <textarea id="assignmentDesc" placeholder="Description"></textarea>
-            <button id="addAssignment">Add Assignment</button>
-          </div>
-          <div id="assignmentsList"></div>
-        </div>
-
-        <div class="panel">
-          <h3>Progress</h3>
-          <div id="myProgress">Loading...</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="announcementsView" class="view hidden">
-      <h2>Announcements</h2>
-      <div id="announceControls" class="controls hidden">
-        <input id="announceTitle" placeholder="Announcement title" />
-        <textarea id="announceBody" placeholder="Announcement text"></textarea>
-        <button id="postAnnouncement">Post Announcement</button>
-      </div>
-      <div id="announcementsList"></div>
-    </section>
-
-    <section id="profileView" class="view hidden">
-      <h2>My Profile</h2>
-      <div id="profileCard">
-        <p><strong>Nickname:</strong> <span id="profileNickname">—</span></p>
-        <p><strong>Email:</strong> <span id="profileEmail">—</span></p>
-        <div id="profileGrades">Loading grades...</div>
-      </div>
-    </section>
-
-    <section id="manageView" class="view hidden">
-      <h2>Manage Students</h2>
-      <div id="studentsList">Loading students...</div>
-    </section>
+  <main id="mainContent">
+    <!-- Dynamic content will be loaded here -->
   </main>
 
-  <footer class="footer">
-    Created by <a href="https://instagram.com/las_omed22" target="_blank" rel="noopener">@Las</a>
+  <footer>
+    <p>Created by <a href="https://instagram.com/las_omed22" target="_blank">@las_omed22</a></p>
   </footer>
 
   <script type="module" src="script.js"></script>
