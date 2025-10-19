@@ -4,51 +4,155 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Study Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+      color: #222;
+      transition: background 0.3s, color 0.3s;
+    }
+    .dark-mode {
+      background-color: #121212;
+      color: #fff;
+    }
+    header {
+      background-color: #3f51b5;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+    .menu-button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    #menu {
+      display: none;
+      position: absolute;
+      right: 15px;
+      top: 60px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      overflow: hidden;
+      z-index: 100;
+    }
+    #menu.dark-mode {
+      background: #333;
+    }
+    #menu a, #menu button {
+      display: block;
+      width: 200px;
+      border: none;
+      background: none;
+      text-align: left;
+      padding: 10px 15px;
+      font-size: 16px;
+      color: #333;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    #menu.dark-mode a, #menu.dark-mode button {
+      color: white;
+    }
+    #menu a:hover, #menu button:hover {
+      background-color: #eee;
+    }
+    #menu.dark-mode a:hover, #menu.dark-mode button:hover {
+      background-color: #444;
+    }
+    main {
+      padding: 20px;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      background: #3f51b5;
+      color: white;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1>📘 Study Dashboard</h1>
-    <button id="menu-btn">⋮</button>
-    <div id="menu" class="hidden">
-      <button id="darkModeToggle">🌗 Toggle Mode</button>
-      <button id="logoutBtn">🚪 Logout</button>
-    </div>
+    <h1>Welcome to Your Dashboard</h1>
+    <button class="menu-button" id="menuBtn">⋮</button>
   </header>
 
-  <main id="dashboard">
-    <section id="user-info">
-      <h2 id="welcomeText">Welcome!</h2>
-      <p id="roleText"></p>
-    </section>
+  <div id="menu">
+    <a href="dashboard.html">🏠 Dashboard</a>
+    <a href="grades.html">📚 View Grades</a>
+    <a href="assignments.html">📝 Assignments</a>
+    <button id="darkModeToggle">🌗 Toggle Dark Mode</button>
+    <button id="logoutBtn">🚪 Logout</button>
+  </div>
 
-    <section id="assignments-section" class="hidden">
-      <h2>📚 Assignments</h2>
-      <div id="assignments-list"></div>
-
-      <div id="add-assignment" class="hidden">
-        <h3>Add Assignment</h3>
-        <input type="text" id="assignmentTitle" placeholder="Title" />
-        <textarea id="assignmentDesc" placeholder="Description"></textarea>
-        <button id="addAssignmentBtn">Add</button>
-      </div>
-    </section>
-
-    <section id="grades-section" class="hidden">
-      <h2>🎯 Your Grades</h2>
-      <div id="grades-container"></div>
-    </section>
-
-    <section id="progress-section" class="hidden">
-      <h2>📈 Progress</h2>
-      <p id="progressText">Loading progress...</p>
-    </section>
+  <main>
+    <h2>Hello, <span id="userEmail">Loading...</span></h2>
+    <p>Here’s your study dashboard! Access grades, assignments, and more from the 3-dot menu.</p>
   </main>
 
-  <footer>
-    <p>Created by <a href="https://instagram.com/las_omed22" target="_blank">@Las</a></p>
-  </footer>
+  <footer>Created by Las</footer>
 
-  <script type="module" src="script.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCWGtP9r-jEbUzdUzOMUcKURiAp8BHHNR4",
+      authDomain: "study-dashboard-d6ee1.firebaseapp.com",
+      projectId: "study-dashboard-d6ee1",
+      storageBucket: "study-dashboard-d6ee1.firebasestorage.app",
+      messagingSenderId: "869698439345",
+      appId: "1:869698439345:web:8e474c1b27221944b6ba90"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const menu = document.getElementById("menu");
+    const menuBtn = document.getElementById("menuBtn");
+    const darkToggle = document.getElementById("darkModeToggle");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const userEmail = document.getElementById("userEmail");
+
+    menuBtn.addEventListener("click", () => {
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    });
+
+    darkToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      menu.classList.toggle("dark-mode");
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userEmail.textContent = user.email;
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    window.onclick = (e) => {
+      if (!e.target.matches('.menu-button')) menu.style.display = "none";
+    };
+  </script>
 </body>
 </html>
