@@ -1,53 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Study Dashboard</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(120deg, #0fd46f, #00aaff);
+      color: white;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      transition: background 0.4s, color 0.4s;
+    }
+    body.dark {
+      background: #0a0a0a;
+      color: #cfcfcf;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+    }
+    .menu {
+      position: relative;
+    }
+    .menu-btn {
+      background: transparent;
+      border: none;
+      font-size: 26px;
+      color: white;
+      cursor: pointer;
+    }
+    .menu-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 35px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
+      overflow: hidden;
+      min-width: 160px;
+      z-index: 100;
+    }
+    .menu-content button {
+      width: 100%;
+      border: none;
+      padding: 10px;
+      background: none;
+      color: white;
+      cursor: pointer;
+      text-align: left;
+      transition: 0.3s;
+    }
+    .menu-content button:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .menu.show .menu-content {
+      display: block;
+    }
+    .container {
+      padding: 20px;
+      text-align: center;
+    }
+    .assignment-item {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px auto;
+      width: 80%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .delete-btn {
+      background: red;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+    #progressTable {
+      width: 90%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      border: 1px solid white;
+    }
+    #progressTable th, #progressTable td {
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 14px;
+    }
+    footer a {
+      color: #0ff;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
-  <nav>
+  <header>
     <h2>Study Dashboard</h2>
-    <div class="menu">
-      <button id="menuBtn">☰</button>
-      <div class="dropdown">
-        <button class="menuItem" id="assignmentsBtn">📘 Assignments</button>
-        <button class="menuItem" id="progressBtn">📈 Progress</button>
-        <button class="menuItem" id="notesBtn">📝 Notes</button>
-        <button id="themeToggle">🌙 Toggle Theme</button>
-        <button id="logoutBtn">🚪 Logout</button>
+    <div class="menu" id="menu">
+      <button class="menu-btn">⋮</button>
+      <div class="menu-content">
+        <button id="toggleTheme">🌗 Dark / Light</button>
+        <button onclick="document.getElementById('assignments').scrollIntoView()">📘 Assignments</button>
+        <button onclick="document.getElementById('progress').scrollIntoView()">📊 Progress</button>
+        <button id="logout">🚪 Log out</button>
       </div>
     </div>
-  </nav>
+  </header>
 
-  <main>
-    <h3 id="welcomeMessage">Welcome!</h3>
-
-    <section id="assignmentsSection" class="section">
-      <h4>Assignments</h4>
-      <div class="assignment-input">
-        <input type="text" id="assignmentInput" placeholder="Add new assignment..." />
-        <button id="addAssignmentBtn">Add</button>
+  <div class="container">
+    <section id="assignments">
+      <h3>Assignments</h3>
+      <div id="addAssignmentSection">
+        <input type="text" id="assignmentTitle" placeholder="Enter assignment title..." />
+        <button id="addAssignment">Add Assignment</button>
       </div>
-      <ul id="assignmentList"></ul>
+      <div id="assignmentList"></div>
     </section>
 
-    <section id="progressSection" class="section hidden">
-      <h4>Progress</h4>
-      <p>Shared progress will appear here.</p>
+    <section id="progress">
+      <h3>Student Progress</h3>
+      <table id="progressTable"></table>
     </section>
-
-    <section id="notesSection" class="section hidden">
-      <h4>Notes</h4>
-      <p>Shared notes will appear here.</p>
-    </section>
-  </main>
+  </div>
 
   <footer>
-    <p>Created by <strong>Las</strong></p>
+    Created by <a href="https://www.instagram.com/las_omed22" target="_blank">@Las</a>
   </footer>
 
   <script type="module" src="script.js"></script>
+  <script>
+    document.querySelector(".menu-btn").addEventListener("click", () => {
+      document.getElementById("menu").classList.toggle("show");
+    });
+  </script>
 </body>
 </html>
