@@ -1,158 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Study Dashboard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f4f4f4;
-      color: #222;
-      transition: background 0.3s, color 0.3s;
-    }
-    .dark-mode {
-      background-color: #121212;
-      color: #fff;
-    }
-    header {
-      background-color: #3f51b5;
-      color: white;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 20px;
-    }
-    .menu-button {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-    }
-    #menu {
-      display: none;
-      position: absolute;
-      right: 15px;
-      top: 60px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      overflow: hidden;
-      z-index: 100;
-    }
-    #menu.dark-mode {
-      background: #333;
-    }
-    #menu a, #menu button {
-      display: block;
-      width: 200px;
-      border: none;
-      background: none;
-      text-align: left;
-      padding: 10px 15px;
-      font-size: 16px;
-      color: #333;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    #menu.dark-mode a, #menu.dark-mode button {
-      color: white;
-    }
-    #menu a:hover, #menu button:hover {
-      background-color: #eee;
-    }
-    #menu.dark-mode a:hover, #menu.dark-mode button:hover {
-      background-color: #444;
-    }
-    main {
-      padding: 20px;
-    }
-    footer {
-      text-align: center;
-      padding: 10px;
-      background: #3f51b5;
-      color: white;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Welcome to Your Dashboard</h1>
-    <button class="menu-button" id="menuBtn">⋮</button>
+  <header class="topbar">
+    <div class="brand">Study Dashboard</div>
+    <div class="right">
+      <div id="welcome" class="welcome">Loading...</div>
+      <button id="menuBtn" class="menu-btn">⋮</button>
+      <div id="menu" class="menu-popup hidden">
+        <button data-action="dashboard">🏠 Dashboard</button>
+        <button data-action="announcements">📢 Announcements</button>
+        <button data-action="profile">👤 My Profile</button>
+        <button id="manageStudentsBtn" data-action="manage" class="hidden">🧑‍🏫 Manage Students</button>
+        <button id="toggleTheme" data-action="theme">🌗 Toggle Theme</button>
+        <button id="logoutBtn" data-action="logout">🚪 Logout</button>
+      </div>
+    </div>
   </header>
 
-  <div id="menu">
-    <a href="dashboard.html">🏠 Dashboard</a>
-    <a href="grades.html">📚 View Grades</a>
-    <a href="assignments.html">📝 Assignments</a>
-    <button id="darkModeToggle">🌗 Toggle Dark Mode</button>
-    <button id="logoutBtn">🚪 Logout</button>
-  </div>
+  <main class="container">
+    <section id="dashboardView" class="view">
+      <h2>Dashboard</h2>
+      <p>Quick overview. Use the menu to navigate.</p>
 
-  <main>
-    <h2>Hello, <span id="userEmail">Loading...</span></h2>
-    <p>Here’s your study dashboard! Access grades, assignments, and more from the 3-dot menu.</p>
+      <div class="panels">
+        <div class="panel">
+          <h3>Assignments</h3>
+          <div id="assignControls" class="controls hidden">
+            <input id="assignmentTitle" placeholder="Title" />
+            <textarea id="assignmentDesc" placeholder="Description"></textarea>
+            <button id="addAssignment">Add Assignment</button>
+          </div>
+          <div id="assignmentsList"></div>
+        </div>
+
+        <div class="panel">
+          <h3>Progress</h3>
+          <div id="myProgress">Loading...</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="announcementsView" class="view hidden">
+      <h2>Announcements</h2>
+      <div id="announceControls" class="controls hidden">
+        <input id="announceTitle" placeholder="Announcement title" />
+        <textarea id="announceBody" placeholder="Announcement text"></textarea>
+        <button id="postAnnouncement">Post Announcement</button>
+      </div>
+      <div id="announcementsList"></div>
+    </section>
+
+    <section id="profileView" class="view hidden">
+      <h2>My Profile</h2>
+      <div id="profileCard">
+        <p><strong>Nickname:</strong> <span id="profileNickname">—</span></p>
+        <p><strong>Email:</strong> <span id="profileEmail">—</span></p>
+        <div id="profileGrades">Loading grades...</div>
+      </div>
+    </section>
+
+    <section id="manageView" class="view hidden">
+      <h2>Manage Students</h2>
+      <div id="studentsList">Loading students...</div>
+    </section>
   </main>
 
-  <footer>Created by Las</footer>
+  <footer class="footer">
+    Created by <a href="https://instagram.com/las_omed22" target="_blank" rel="noopener">@Las</a>
+  </footer>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCWGtP9r-jEbUzdUzOMUcKURiAp8BHHNR4",
-      authDomain: "study-dashboard-d6ee1.firebaseapp.com",
-      projectId: "study-dashboard-d6ee1",
-      storageBucket: "study-dashboard-d6ee1.firebasestorage.app",
-      messagingSenderId: "869698439345",
-      appId: "1:869698439345:web:8e474c1b27221944b6ba90"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const menu = document.getElementById("menu");
-    const menuBtn = document.getElementById("menuBtn");
-    const darkToggle = document.getElementById("darkModeToggle");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const userEmail = document.getElementById("userEmail");
-
-    menuBtn.addEventListener("click", () => {
-      menu.style.display = menu.style.display === "block" ? "none" : "block";
-    });
-
-    darkToggle.addEventListener("click", () => {
-      document.body.classList.toggle("dark-mode");
-      menu.classList.toggle("dark-mode");
-    });
-
-    logoutBtn.addEventListener("click", () => {
-      signOut(auth).then(() => {
-        window.location.href = "index.html";
-      });
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        userEmail.textContent = user.email;
-      } else {
-        window.location.href = "index.html";
-      }
-    });
-
-    window.onclick = (e) => {
-      if (!e.target.matches('.menu-button')) menu.style.display = "none";
-    };
-  </script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
